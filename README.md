@@ -1,2 +1,2 @@
 # Akira
-Hehe
+CARI APA SAYANG 💕
