@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akira Terminal</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #00FF00;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .terminal-window {
+            background-color: #000000;
+            border: 2px solid #333;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            padding: 20px;
+        }
+
+        .terminal-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .red { background-color: #ff5f56; }
+        .yellow { background-color: #ffbd2e; }
+        .green { background-color: #27c93f; }
+
+        .terminal-body {
+            white-space: pre;
+            line-height: 1.2;
+            font-size: 14px;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+        }
+
+        .cursor {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        
+        /* Responsif untuk layar HP */
+        @media (max-width: 500px) {
+            .terminal-body { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+        </div>
+        <div class="terminal-body" id="terminal-output"></div>
+    </div>
+
+    <script>
+        const output = document.getElementById('terminal-output');
+        
+        const frames = [
+            // Frame 1: Terbuka
+            `       .01111111111110.
+     .010000000000000010.
+    0100000011111100000010
+   010000001100001100000010
+   010000001100001100000010
+    0100000011111100000010
+     '010000000000000010'
+       '01111111111110'`,
+            // Frame 2: Setengah Tutup
+            `       .00000000000000.
+     .000000000000000000.
+    0000000000000000000000
+   000000000000000000000000
+   000000000000000000000000
+    0000000000000000000000
+     '000000000000000000'
+       '00000000000000'`,
+            // Frame 3: Tertutup
+            `       .----------------.
+     .--------------------.
+    ------------------------
+    ------------------------
+    ------------------------
+    ------------------------
+     '--------------------'
+       '----------------'`
+        ];
+
+        const header = "👨‍💻 SYSTEM ACCESS: GRANTED 👨‍💻\n\n";
+        const footer = "\n\n> SCANNING TARGET...";
+
+        let currentFrame = 0;
+
+        function renderFrame() {
+            // Tampilkan header dan frame mata
+            output.innerHTML = header + frames[currentFrame] + footer + '\n<span class="cursor">█</span>';
+            
+            // Logika animasi berkedip
+            if (currentFrame === 0) {
+                // Jika mata terbuka, tahan agak lama (seperti di Python)
+                setTimeout(() => {
+                    currentFrame = 1;
+                    renderFrame();
+                }, 1500); 
+            } else if (currentFrame === 1) {
+                // Setengah tutup, lanjut ke tertutup dengan cepat
+                setTimeout(() => {
+                    currentFrame = 2;
+                    renderFrame();
+                }, 150); 
+            } else if (currentFrame === 2) {
+                // Tertutup, balik ke setengah tutup
+                setTimeout(() => {
+                    currentFrame = 1;
+                    renderFrame();
+                }, 150); 
+            } else if (currentFrame === 1 && output.innerHTML.includes('---')) {
+                 // Logika untuk kembali membuka mata setelah berkedip
+                 setTimeout(() => {
+                    currentFrame = 0;
+                    renderFrame();
+                }, 150);
+            }
+        }
+
+        // Perbaikan logika loop agar berkedip dengan benar
+        function loopAnimation() {
+             output.innerHTML = header + frames[0] + footer + '\n<span class="cursor">█</span>';
+             
+             setTimeout(() => {
+                 output.innerHTML = header + frames[1] + footer + '\n<span class="cursor">█</span>';
+                 setTimeout(() => {
+                     output.innerHTML = header + frames[2] + footer + '\n<span class="cursor">█</span>';
+                     setTimeout(() => {
+                         output.innerHTML = header + frames[1] + footer + '\n<span class="cursor">█</span>';
+                         setTimeout(loopAnimation, 150); // Ulangi
+                     }, 150);
+                 }, 150);
+             }, 1500);
+        }
+
+        // Mulai animasi saat halaman dimuat
+        loopAnimation();
+
+    </script>
+</body>
+</html>
